@@ -1,0 +1,44 @@
+{
+	"compilerOptions": {
+		"sourceMap": true,
+		"allowJs": true,
+		"target": "ES2015",
+		"module": "CommonJS",
+		"lib": [
+			"es2016",
+			"dom"
+		],
+		"declaration": true,
+		"declarationDir": "./dist/typings/",
+		"outDir": "./dist/",
+		"moduleResolution": "node",
+		"allowSyntheticDefaultImports": true,
+		"baseUrl": ".",
+		"paths": {
+			"@kotron/watcher": [
+				"./src"
+			],
+			"@/*": [
+				"./example/*"
+			],
+		},
+		"resolveJsonModule": true,
+		"esModuleInterop": true
+	},
+	"files": [
+		"src/index.ts"
+	],
+	"include": [
+		"./src/**/*",
+		"./src/**/*.ts",
+		"./src/**/*.d.ts",
+		"./src/**/*.vue",
+		"./example/**/*",
+		"./example/**/*.ts",
+		"./example/**/*.d.ts",
+		"./example/**/*.vue",
+	],
+	"exclude": [
+		"node_modules"
+	]
+}
