@@ -50,7 +50,7 @@ export function getProxyOptions<
 }
 
 /**
- * 获取代理数据值
+ * 获取代理数据集
  * @param proxy 代理对象
  * @returns
  */

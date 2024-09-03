@@ -31,74 +31,95 @@ import MdPreviewVue from '@/components/MdPreview.vue';
 
 console.clear();
 
-const studentList = DataProxy<
-	Array<{
-		name: string;
-		age: number;
-	}>
->([
-	{
-		name: '小明',
-		age: 15,
+const options = {
+	name: '演示项目',
+	version: '0.1.0',
+	tags: ['0.0.1', '0.0.5', '0.1.0'],
+	author: {
+		name: 'GT',
+		email: '769416198@qq.com',
 	},
-	{
-		name: '小红',
-		age: 16,
-	},
-	{
-		name: '张三',
-		age: 15,
-	},
-	{
-		name: '李四',
-		age: 15,
-	},
-]);
+};
 
-getDataRecord(studentList);
+// 创建数据代理
+const data = DataProxy(options);
 
+console.log(data);
+
+// 观察代理对象
 watchProxy(
-	studentList,
+	data,
 	(record) => {
-		console.log(record);
+		console.log('watchProxy', record);
 	},
 	{
+		// 顶层代理对象需要添加深观察才能生效
 		deep: true,
 	}
 );
 
-addWatch(studentList, 0, (record) => {
-	console.log(record);
-});
-
-addWatch(studentList, 1, (record) => {
-	console.log(record);
-});
-
-const data = DataProxy<{
-	studentList: typeof studentList;
-}>({
-	studentList: null,
-});
-
-data.studentList = studentList;
-
+// 观察属性
 addWatch(
 	data,
-	'studentList',
+	'name',
 	(record) => {
-		console.log('studentList', record);
+		console.log('name', record);
 	},
 	{
+		// 立即触发
+		immediate: true,
+	}
+);
+
+// 深观察tags数组
+addWatch(
+	data,
+	'tags',
+	(record) => {
+		console.log('tags', record);
+	},
+	{
+		// 深观察
 		deep: true,
 	}
 );
 
-studentList.shift();
-// studentList.push({
-// 	name: '王五',
-// 	age: 18,
-// });
+/**
+ * 监听多个属性
+ * removeWatch为可移除观察的函数
+ */
+const removeWatch = addWatch(
+	data,
+	['version', 'author'],
+	(records, trigger) => {
+		console.log('version & author', records, trigger);
+	}
+);
+
+data.name = '演示项目2';
+
+data.tags.push('0.1.1');
+
+data.version = '0.1.1';
+
+removeWatch();
+
+console.log(getTarget(data));
+console.log(getOriginValue(data.tags));
+console.log(getDataRecord(data, 'name'));
+
+const setter = protect(data.author);
+data.author.name = 'GTX';
+setter((target) => {
+	target.name = 'GTX';
+});
+
+readonly(data, 'name');
+data.name = '演示项目';
+
+console.log(isProxy(data.tags));
+console.log(isProtected(data.author, 'name'));
+console.log(isReadonly(data, 'name'));
 </script>
 
 <style lang="scss" scoped></style>

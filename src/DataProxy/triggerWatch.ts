@@ -35,7 +35,7 @@ export function triggerWatchByOptions<
 				});
 				(<DataProxy.WatchOptions.MultipleWatchHandler<T[K]>>handler)(
 					records,
-					bubble
+					bubble || null
 				);
 			} else {
 				(<DataProxy.WatchOptions.WatchHandler<T[K]>>handler)(

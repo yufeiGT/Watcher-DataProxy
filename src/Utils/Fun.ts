@@ -169,7 +169,9 @@ export function addWatch<T extends DataProxy.Type, K extends keyof T = keyof T>(
 		proxy[Instruct.SymbolValue.$ADD_PROXY_WATCH] = [
 			id,
 			{
-				key: `${<any>key}`,
+				key: Spanner.isArray(key)
+					? key.map((item) => `${<any>item}`)
+					: `${<any>key}`,
 				handler,
 				...opts,
 			} as DataProxy.WatchOptions<T[K]>,
