@@ -11,7 +11,7 @@ import { getDataRecord, getSuperiorProxy, getTarget, isProxy } from '../Utils';
  * @param bubble 触发冒泡的记录
  */
 export function updateDataRecord<T extends DataProxy.Type>(
-	proxy: T,
+	proxy: DataProxy<T>,
 	path: string[],
 	bubble: DataProxy.DataRecord
 ) {
@@ -45,7 +45,7 @@ export function updateDataRecord<T extends DataProxy.Type>(
 			type: 'Update',
 			bubble,
 		} as Instruct.SetDataRecordParams<T>;
-	} 
+	}
 }
 
 /**
@@ -55,7 +55,7 @@ export function updateDataRecord<T extends DataProxy.Type>(
  * @param bubble 发生变化的记录
  */
 export function bubbleUpdateRecord<T extends DataProxy.Type>(
-	proxy: T,
+	proxy: DataProxy<T>,
 	path: string[],
 	record: DataProxy.DataRecord
 ) {

@@ -8,7 +8,7 @@ import { isNotDataProxy } from './NotDataProxy';
  * @param target 需要判断的目标
  * @returns
  */
-export function isProxy<T>(target: T) {
+export function isProxy<T>(target: T): target is DataProxy<T> {
 	return target && target[Instruct.SymbolValue.$IS_PROXY] === true;
 }
 
@@ -17,7 +17,9 @@ export function isProxy<T>(target: T) {
  * @param proxy 需要判断的代理对象
  * @returns
  */
-export function isProtected<T extends DataProxy.Type>(proxy: T): boolean;
+export function isProtected<T extends DataProxy.Type>(
+	proxy: DataProxy<T>
+): boolean;
 /**
  * 判断代理对象的属性是否受保护
  * @param proxy 需要判断的代理对象
@@ -27,12 +29,12 @@ export function isProtected<T extends DataProxy.Type>(proxy: T): boolean;
 export function isProtected<
 	T extends DataProxy.Type,
 	K extends keyof T = keyof T
->(proxy: T, key: K): boolean;
+>(proxy: DataProxy<T>, key: K): boolean;
 export function isProtected<
 	T extends DataProxy.Type,
 	K extends keyof T = keyof T
 >(...params) {
-	const [proxy, key] = <[T, K]>params;
+	const [proxy, key] = <[DataProxy<T>, K]>params;
 	if (isProxy(proxy)) {
 		if (proxy[Instruct.SymbolValue.$IS_PROTECT]) {
 			return true;
@@ -59,7 +61,9 @@ export function isProtected<
  * @param proxy 需要判断的代理对象
  * @returns
  */
-export function isReadonly<T extends DataProxy.Type>(proxy: T): boolean;
+export function isReadonly<T extends DataProxy.Type>(
+	proxy: DataProxy<T>
+): proxy is Readonly<T>;
 /**
  * 判断代理对象的属性是否只读
  * @param proxy 需要判断的代理对象
@@ -69,12 +73,12 @@ export function isReadonly<T extends DataProxy.Type>(proxy: T): boolean;
 export function isReadonly<
 	T extends DataProxy.Type,
 	K extends keyof T = keyof T
->(proxy: T, key: K): boolean;
+>(proxy: DataProxy<T>, key: K): proxy is Readonly<T>;
 export function isReadonly<
 	T extends DataProxy.Type,
 	K extends keyof T = keyof T
 >(...params) {
-	const [proxy, key] = <[T, K]>params;
+	const [proxy, key] = <[DataProxy<T>, K]>params;
 	if (isProxy(proxy)) {
 		if (proxy[Instruct.SymbolValue.$IS_READONLY]) {
 			return true;
@@ -101,7 +105,7 @@ export function isReadonly<
  * @param proxy 需要判断的代理对象
  * @returns
  */
-export function isProtectAuth<T extends DataProxy.Type>(proxy: T) {
+export function isProtectAuth<T extends DataProxy.Type>(proxy: DataProxy<T>) {
 	if (isProxy(proxy)) {
 		return proxy[Instruct.SymbolValue.$PROXY_PROTECT_SETTER_AUTH] === true;
 	} else {
@@ -114,7 +118,9 @@ export function isProtectAuth<T extends DataProxy.Type>(proxy: T) {
  * 代理对象是否启用数组操作拦截
  * @param proxy 代理对象
  */
-export function isArrayOperateIntercept<T extends DataProxy.Type>(proxy: T) {
+export function isArrayOperateIntercept<T extends DataProxy.Type>(
+	proxy: DataProxy<T>
+) {
 	if (proxy) {
 		return proxy[Instruct.SymbolValue.$ARRAY_OPERATE_INTERCEPT] === true;
 	} else {

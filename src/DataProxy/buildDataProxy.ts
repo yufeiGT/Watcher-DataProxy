@@ -27,14 +27,14 @@ import { triggerWatch } from './triggerWatch';
 export function buildDataProxy<
 	S extends DataProxy.Type = DataProxy.Type,
 	T extends DataProxy.Type = DataProxy.Type
->(target: T, options: Partial<DataProxy.Options<S>> = {}) {
+>(target: T, options: Partial<DataProxy.Options<T, S>> = {}) {
 	const isArray = Spanner.isArray(target);
 	const isObject = Spanner.isObject(target);
 	if (!isArray && !isObject) {
 		console.warn(`The target type needs to be 'object' or 'array'`);
 		return;
 	}
-	const proxyOptions = DataProxy.Options.getOptions<S>(options);
+	const proxyOptions = DataProxy.Options.getOptions<T, S>(options);
 	const { superiorDataSet, key } = proxyOptions;
 	let path = [];
 	if (superiorDataSet) {
@@ -48,7 +48,7 @@ export function buildDataProxy<
 		isProtect: !!(superiorDataSet && superiorDataSet.isProtect),
 		isReadonly: !!(superiorDataSet && superiorDataSet.isReadonly),
 	});
-	const dataProxy = new Proxy(target, {
+	const dataProxy: DataProxy<T> = new Proxy(target, {
 		set(target, key, value) {
 			if (Spanner.isSymbol(key)) {
 				const instructions = processingInstructions(
@@ -68,7 +68,7 @@ export function buildDataProxy<
 				if (isReadonly(dataProxy, <any>key)) {
 					console.warn(`Assignment to readonly variable '${key}'`);
 				} else if (
-					isProtected(dataProxy, <any>key) &&
+					isProtected(dataProxy, <never>key) &&
 					!isProtectAuth(dataProxy)
 				) {
 					console.warn(`Assignment to protection variable '${key}'`);
@@ -148,7 +148,8 @@ export function buildDataProxy<
 							const isNew = !(key in proxyDataSet.originValue);
 							if (isNew) {
 								proxyDataSet.attrIsNewMap.set(<any>key, true);
-								dataProxy[
+
+								(<DataProxy<T>>dataProxy)[
 									Instruct.SymbolValue.$SET_DATA_RECORD
 								] = [
 									<any>key,
@@ -157,8 +158,8 @@ export function buildDataProxy<
 									},
 								] as [keyof T, Instruct.SetDataRecordParams<T>];
 							} else {
-								getDataRecord(dataProxy, <any>key);
-								dataProxy[
+								getDataRecord(dataProxy, <never>key);
+								(<DataProxy<T>>dataProxy)[
 									Instruct.SymbolValue.$SET_DATA_RECORD
 								] = [
 									<any>key,
@@ -228,7 +229,7 @@ export function buildDataProxy<
 		deleteProperty(target, key) {
 			if (isReadonly(dataProxy, <any>key)) {
 				console.warn(`Assignment to readonly variable '${<any>key}'`);
-			} else if (isProtected(dataProxy, <any>key)) {
+			} else if (isProtected(dataProxy, <never>key)) {
 				console.warn(`Assignment to protection variable '${<any>key}'`);
 			} else if (key in target) {
 				if (isArrayOperateIntercept(dataProxy)) {
@@ -238,8 +239,10 @@ export function buildDataProxy<
 					if (proxyDataSet.childDataProxyMap.has(<any>key)) {
 						proxyDataSet.childDataProxyMap.delete(<any>key);
 					}
-					getDataRecord(dataProxy, <any>key);
-					dataProxy[Instruct.SymbolValue.$SET_DATA_RECORD] = [
+					getDataRecord(dataProxy, <never>key);
+					(<DataProxy<T>>dataProxy)[
+						Instruct.SymbolValue.$SET_DATA_RECORD
+					] = [
 						key,
 						{
 							currentValue: null,

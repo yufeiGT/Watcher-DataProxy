@@ -23,7 +23,8 @@
 			],
 		},
 		"resolveJsonModule": true,
-		"esModuleInterop": true
+		"esModuleInterop": true,
+		"experimentalDecorators": true
 	},
 	"files": [
 		"src/index.ts"

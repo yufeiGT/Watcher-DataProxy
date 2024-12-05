@@ -13,8 +13,8 @@ import { getSuperiorProxy, getProxyPath } from './Getter';
  * @returns 可以对保护对象进行赋值的函数
  */
 export function protect<T extends DataProxy.Type>(
-	proxy: T
-): (setter: T | ((target: T) => void)) => void;
+	proxy: DataProxy<T>
+): (setter: (target: DataProxy<T>) => void) => void;
 /**
  * 保护代理对象下的属性
  * @param proxy 代理对象
@@ -22,13 +22,13 @@ export function protect<T extends DataProxy.Type>(
  * @returns 可以对属性进行赋值的函数
  */
 export function protect<T extends DataProxy.Type, K extends keyof T = keyof T>(
-	proxy: T,
+	proxy: DataProxy<T>,
 	key: K
 ): (value: T[K]) => void;
 export function protect<T extends DataProxy.Type, K extends keyof T = keyof T>(
 	...params
 ) {
-	const [proxy, key] = <[T, K]>params;
+	const [proxy, key] = <[DataProxy<T>, K]>params;
 	if (isProxy(proxy)) {
 		if (params.length > 1) {
 			proxy[Instruct.SymbolValue.$SET_PROXY_PROTECT] = key;
@@ -45,9 +45,13 @@ export function protect<T extends DataProxy.Type, K extends keyof T = keyof T>(
 			}
 			proxy[Instruct.SymbolValue.$SET_PROXY_PROTECT];
 			return (setter: (target: T) => void) => {
-				proxy[Instruct.SymbolValue.$PROXY_PROTECT_SETTER_AUTH] = true;
-				setter(proxy);
-				proxy[Instruct.SymbolValue.$PROXY_PROTECT_SETTER_AUTH] = false;
+				if (Spanner.isFunction(setter)) {
+					proxy[Instruct.SymbolValue.$PROXY_PROTECT_SETTER_AUTH] =
+						true;
+					setter(proxy);
+					proxy[Instruct.SymbolValue.$PROXY_PROTECT_SETTER_AUTH] =
+						false;
+				}
 			};
 		}
 	} else {
@@ -59,20 +63,20 @@ export function protect<T extends DataProxy.Type, K extends keyof T = keyof T>(
  * 设置代理对象为只读
  * @param proxy 需要设置代理对象
  */
-export function readonly<T extends DataProxy.Type>(proxy: T): void;
+export function readonly<T extends DataProxy.Type>(proxy: DataProxy<T>): void;
 /**
  * 设置代理对象下的属性为只读
  * @param proxy 代理对象
  * @param key 需要设置的属性
  */
 export function readonly<T extends DataProxy.Type, K extends keyof T = keyof T>(
-	proxy: T,
+	proxy: DataProxy<T>,
 	key: K
 ): void;
 export function readonly<T extends DataProxy.Type, K extends keyof T = keyof T>(
 	...params
 ) {
-	const [proxy, key] = <[T, K]>params;
+	const [proxy, key] = <[DataProxy<T>, K]>params;
 	if (isProxy(proxy)) {
 		if (params.length > 1) {
 			proxy[Instruct.SymbolValue.$SET_PROXY_READONLY] = key;
@@ -97,10 +101,10 @@ export function readonly<T extends DataProxy.Type, K extends keyof T = keyof T>(
  * @returns 可移除观察的函数
  */
 export function watchProxy<T extends DataProxy.Type>(
-	proxy: T,
+	proxy: DataProxy<T>,
 	handler: DataProxy.WatchOptions.WatchHandler<T>,
 	options: Partial<Omit<DataProxy.WatchOptions, 'key' | 'handler'>> = {}
-) {
+): DataProxy.RemoveWatch {
 	if (isProxy(proxy)) {
 		const id = Spanner.createID();
 		const opts = Spanner.merge(
@@ -132,11 +136,11 @@ export function watchProxy<T extends DataProxy.Type>(
  * @returns 可移除观察的函数
  */
 export function addWatch<T extends DataProxy.Type, K extends keyof T = keyof T>(
-	proxy: T,
+	proxy: DataProxy<T>,
 	key: K,
 	handler: DataProxy.WatchOptions.WatchHandler<T>,
 	options?: Partial<Omit<DataProxy.WatchOptions, 'key' | 'handler'>>
-): () => void;
+): DataProxy.RemoveWatch;
 /**
  * 为代理对象下的属性添加观察
  * @param proxy 代理对象
@@ -146,13 +150,13 @@ export function addWatch<T extends DataProxy.Type, K extends keyof T = keyof T>(
  * @returns 可移除观察的函数
  */
 export function addWatch<T extends DataProxy.Type, K extends keyof T = keyof T>(
-	proxy: T,
+	proxy: DataProxy<T>,
 	keys: K[],
 	handler: DataProxy.WatchOptions.MultipleWatchHandler<T>,
 	options?: Partial<Omit<DataProxy.WatchOptions, 'key' | 'handler'>>
-): () => void;
+): DataProxy.RemoveWatch;
 export function addWatch<T extends DataProxy.Type, K extends keyof T = keyof T>(
-	proxy: T,
+	proxy: DataProxy<T>,
 	key: K | K[],
 	handler: DataProxy.WatchOptions['handler'],
 	options: Partial<Omit<DataProxy.WatchOptions, 'key' | 'handler'>> = {}

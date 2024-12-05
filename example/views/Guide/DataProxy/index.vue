@@ -1,6 +1,6 @@
 <template>
 	<ConfigProvider :border-radius="4">
-		<Flex vert="auto" gap apd></Flex>
+		<Flex vert="auto" gap apd> </Flex>
 	</ConfigProvider>
 </template>
 
@@ -31,7 +31,19 @@ import MdPreviewVue from '@/components/MdPreview.vue';
 
 console.clear();
 
-const options = {
+interface Author {
+	name: string;
+	email: string;
+}
+
+interface Options {
+	name: string;
+	version: string;
+	tags: string[];
+	author: Author;
+}
+
+const options: Options = {
 	name: '演示项目',
 	version: '0.1.0',
 	tags: ['0.0.1', '0.0.5', '0.1.0'],
@@ -42,7 +54,7 @@ const options = {
 };
 
 // 创建数据代理
-const data = DataProxy(options);
+const data = DataProxy.use(options);
 
 console.log(data);
 

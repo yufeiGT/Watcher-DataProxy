@@ -100,6 +100,30 @@ export namespace Instruct {
 		$SET_PROXY_READONLY: Symbol('set proxy readonly'),
 	};
 
+	export function use<T = any, U = any>(
+		name: string,
+		instructSymbol: symbol,
+		opts: {
+			get?: Getter<U>;
+			set?: Setter<T, U>;
+		}
+	) {}
+
+	/**
+	 * 返回值钩子
+	 */
+	export type ReturnHook<T> = () => T;
+
+	/**
+	 * 指令获取
+	 */
+	export type Getter<T> = () => ReturnHook<T>;
+
+	/**
+	 * 指令设置
+	 */
+	export type Setter<T, U> = (value: T) => ReturnHook<U>;
+
 	/**
 	 * 判断属性
 	 */

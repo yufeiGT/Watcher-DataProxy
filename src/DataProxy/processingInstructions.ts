@@ -6,8 +6,6 @@ import { isProtectAuth, getDataRecord, getOriginValue } from '../Utils';
 import { DataProxy } from './index';
 import { triggerWatchByOptions } from './triggerWatch';
 
-export type ProcessingInstructionsReturnHook<T> = () => T;
-
 /**
  * 处理系统指令
  * @param proxy 代理对象
@@ -21,17 +19,17 @@ export type ProcessingInstructionsReturnHook<T> = () => T;
 export function processingInstructions<
 	R,
 	T extends DataProxy.Type = DataProxy.Type,
-	U extends DataProxy.Type = DataProxy.Type,
+	S extends DataProxy.Type = DataProxy.Type,
 	I extends Instruct = Instruct,
 	IK extends keyof I = keyof I
 >(
-	proxy: T,
-	proxyOptions: DataProxy.Options<U>,
+	proxy: DataProxy<T>,
+	proxyOptions: DataProxy.Options<T, S>,
 	proxyDataSet: DataProxy.DataSet<T>,
 	target: T,
 	type: IK,
 	value?: I[IK]
-): ProcessingInstructionsReturnHook<R> {
+): Instruct.ReturnHook<R> {
 	switch (type) {
 		case Instruct.SymbolValue.$IS_PROXY:
 			return () => <any>true;

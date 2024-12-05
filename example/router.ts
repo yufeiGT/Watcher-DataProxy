@@ -4,6 +4,8 @@ import HomeVue from './views/Home/index.vue';
 
 import GuideVue from './views/Guide/index.vue';
 import DataProxyVue from './views/Guide/DataProxy/index.vue';
+import StateVue from './views/Guide/State/index.vue';
+import HistoryVue from './views/Guide/History/index.vue';
 
 import TestVue from './views/Test/index.vue';
 
@@ -26,6 +28,16 @@ const routeConfig: Router.Config[] = [
 				label: '数据代理',
 				name: 'DataProxy',
 				component: DataProxyVue,
+			},
+			{
+				label: '状态管理',
+				name: 'State',
+				component: StateVue,
+			},
+			{
+				label: '历史记录',
+				name: 'History',
+				component: HistoryVue,
 			},
 		],
 	},

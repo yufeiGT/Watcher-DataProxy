@@ -4,11 +4,10 @@ import { buildDataProxy } from './buildDataProxy';
 
 /**
  * 数据代理
- * @param target 需要构建数据代理的目标
  */
-export function DataProxy<T extends DataProxy.Type>(target: T) {
-	return buildDataProxy(target);
-}
+export type DataProxy<T> = {
+	[K in keyof T]: T[K];
+} & T;
 export namespace DataProxy {
 	/**
 	 * 数据类型
@@ -18,23 +17,24 @@ export namespace DataProxy {
 	/**
 	 * 移除监听钩子
 	 */
-	export type RemoveListen = () => void;
+	export type RemoveWatch = () => void;
 
 	/**
 	 * 选项
 	 */
 	export interface Options<
 		T extends DataProxy.Type = DataProxy.Type,
+		S extends DataProxy.Type = DataProxy.Type,
 		K extends keyof T = keyof T
 	> {
 		/**
 		 * 上级代理
 		 */
-		superiorDataProxy: T;
+		superiorDataProxy: DataProxy<S>;
 		/**
 		 * 上级代理数据集
 		 */
-		superiorDataSet: DataSet<T>;
+		superiorDataSet: DataSet<S>;
 		/**
 		 * 当前数据键值
 		 */
@@ -45,7 +45,10 @@ export namespace DataProxy {
 		 * 获取默认值
 		 * @returns
 		 */
-		export function getDefault<T extends DataProxy.Type>(): Options<T> {
+		export function getDefault<
+			T extends DataProxy.Type,
+			S extends DataProxy.Type
+		>(): Options<T, S> {
 			return {
 				superiorDataProxy: null,
 				superiorDataSet: null,
@@ -58,10 +61,11 @@ export namespace DataProxy {
 		 * @param options 可选的选项
 		 * @returns
 		 */
-		export function getOptions<T extends DataProxy.Type>(
-			options: Partial<Options<T>>
-		) {
-			return Spanner.merge(getDefault(), options) as Options<T>;
+		export function getOptions<
+			T extends DataProxy.Type,
+			S extends DataProxy.Type
+		>(options: Partial<Options<T, S>>) {
+			return Spanner.merge(getDefault(), options) as Options<T, S>;
 		}
 	}
 
@@ -304,5 +308,12 @@ export namespace DataProxy {
 			records: DataRecord<T>[],
 			trigger: DataRecord
 		) => void;
+	}
+	/**
+	 * 使用数据代理
+	 * @param target 需要构建数据代理的目标
+	 */
+	export function use<T extends DataProxy.Type>(target: T): DataProxy<T> {
+		return buildDataProxy(target);
 	}
 }

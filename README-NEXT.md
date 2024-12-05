@@ -332,6 +332,71 @@ console.log(isReadonly(data, 'name'));
 </script>
 ```
 
+#### 历史记录
+
+```TypeScript
+import { DataProxy, History } from '@kotron/watcher';
+
+const data = DataProxy(options);
+
+const tagsHistory = History.use(data.tags);
+
+console.log(tagsHistory);
+// 输出
+[{
+    timestamp: 1725267320385,
+    type: 'Add',
+    path: ['tags'],
+    key: 'tags',
+    isNew: false,
+    hasChange: false,
+    originValue: null,
+    oldValue: ['0.0.1', '0.0.5', '0.1.0'],
+    value: ['0.0.1', '0.0.5', '0.1.0'],
+    bubble: null
+}]
+
+tagsHistory.push('0.1.1');
+tagsHistory.shift();
+
+console.log(tagsHistory);
+// 输出
+[{
+    timestamp: 1725267320385,
+    type: 'Add',
+    path: ['tags'],
+    key: 'tags',
+    isNew: false,
+    hasChange: false,
+    originValue: null,
+    oldValue: ['0.0.1', '0.0.5', '0.1.0'],
+    value: ['0.0.1', '0.0.5', '0.1.0'],
+    bubble: null
+}, {
+    timestamp: 1725267320385,
+    type: 'Update',
+    path: ['tags'],
+    key: 'tags',
+    isNew: false,
+    hasChange: true,
+    originValue: ['0.0.1', '0.0.5', '0.1.0'],
+    oldValue: ['0.0.1', '0.0.5', '0.1.0'],
+    value: ['0.0.1', '0.0.5', '0.1.0', '0.1.1'],
+    bubble: null
+}, {
+    timestamp: 1725267320385,
+    type: 'Update',
+    path: ['tags'],
+    key: 'tags',
+    isNew: false,
+    hasChange: true,
+    originValue: ['0.0.1', '0.0.5', '0.1.0', '0.1.1'],
+    oldValue: ['0.0.1', '0.0.5', '0.1.0'],
+    value: ['0.0.5', '0.1.0', '0.1.1'],
+    bubble: null
+}]
+```
+
 #### 文档
 
 | 函数名                    | 说明                               |

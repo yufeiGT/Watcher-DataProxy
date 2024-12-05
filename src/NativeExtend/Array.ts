@@ -20,7 +20,7 @@ import { triggerWatch } from '../DataProxy/triggerWatch';
  * @returns 数组原始函数返回值
  */
 export function arrayOperateIntercept<T extends any[]>(
-	proxy: T,
+	proxy: DataProxy<T>,
 	nativeHandler: (proxy: T) => any,
 	operateHandler: (options: {
 		proxy: T;

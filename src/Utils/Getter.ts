@@ -25,7 +25,7 @@ export function getTarget<T>(proxy: T): T {
 export function getSuperiorProxy<
 	T extends DataProxy.Type,
 	U extends DataProxy.Type = DataProxy.Type
->(proxy: U): T {
+>(proxy: U): DataProxy<T> {
 	if (isProxy(proxy)) {
 		return proxy[Instruct.SymbolValue.$GET_SUPERIOR_PROXY];
 	} else {
@@ -41,7 +41,7 @@ export function getSuperiorProxy<
 export function getProxyOptions<
 	S extends DataProxy.Type,
 	T extends DataProxy.Type
->(proxy: T): DataProxy.Options<S> {
+>(proxy: DataProxy<T>): DataProxy.Options<T, S> {
 	if (isProxy(proxy)) {
 		return proxy[Instruct.SymbolValue.$GET_PROXY_OPTIONS];
 	} else {
@@ -55,7 +55,7 @@ export function getProxyOptions<
  * @returns
  */
 export function getProxyDataSet<T extends DataProxy.Type>(
-	proxy: T
+	proxy: DataProxy<T>
 ): DataProxy.DataSet<T> {
 	if (isProxy(proxy)) {
 		return proxy[Instruct.SymbolValue.$GET_PROXY_DATASET];
@@ -72,7 +72,7 @@ export function getProxyDataSet<T extends DataProxy.Type>(
 export function getProxyPath<
 	T extends DataProxy.Type,
 	K extends keyof T = keyof T
->(proxy: T): K[];
+>(proxy: DataProxy<T>): K[];
 /**
  * 获取代理对象下属性的数据路径
  * @param proxy 代理对象
@@ -81,12 +81,12 @@ export function getProxyPath<
 export function getProxyPath<
 	T extends DataProxy.Type,
 	K extends keyof T = keyof T
->(proxy: T, key: K): K[];
+>(proxy: DataProxy<T>, key: K): K[];
 export function getProxyPath<
 	T extends DataProxy.Type,
 	K extends keyof T = keyof T
 >(...params): K[] {
-	const [proxy, key] = <[T, K]>params;
+	const [proxy, key] = <[DataProxy<T>, K]>params;
 	if (isProxy(proxy)) {
 		if (params.length > 1) {
 			let res: K[];
@@ -107,7 +107,9 @@ export function getProxyPath<
  * @param proxy 代理对象
  * @returns
  */
-export function getOriginValue<T extends DataProxy.Type>(proxy: T): T;
+export function getOriginValue<T extends DataProxy.Type>(
+	proxy: DataProxy<T>
+): T;
 /**
  * 获取代理对象下属性的初始值
  * @param proxy 代理对象
@@ -117,12 +119,12 @@ export function getOriginValue<T extends DataProxy.Type>(proxy: T): T;
 export function getOriginValue<
 	T extends DataProxy.Type,
 	K extends keyof T = keyof T
->(proxy: T, key: K): T[K];
+>(proxy: DataProxy<T>, key: K): T[K];
 export function getOriginValue<
 	T extends DataProxy.Type,
 	K extends keyof T = keyof T
 >(...params) {
-	const [proxy, key] = <[T, K]>params;
+	const [proxy, key] = <[DataProxy<T>, K]>params;
 	if (isProxy(proxy)) {
 		if (params.length > 1) {
 			let res: T[K];
@@ -143,7 +145,7 @@ export function getOriginValue<
  * @param proxy 代理对象
  */
 export function getDataRecord<T extends DataProxy.Type>(
-	proxy: T
+	proxy: DataProxy<T>
 ): DataProxy.DataRecord<T>;
 /**
  * 获取代理对象下属性的数据记录
@@ -153,12 +155,12 @@ export function getDataRecord<T extends DataProxy.Type>(
 export function getDataRecord<
 	T extends DataProxy.Type,
 	K extends keyof T = keyof T
->(proxy: T, key: K): DataProxy.DataRecord<T[K]>;
+>(proxy: DataProxy<T>, key: K): DataProxy.DataRecord<T[K]>;
 export function getDataRecord<
 	T extends DataProxy.Type,
 	K extends keyof T = keyof T
 >(...params) {
-	const [proxy, key] = <[T, K]>params;
+	const [proxy, key] = <[DataProxy<T>, K]>params;
 	if (isProxy(proxy)) {
 		if (params.length > 1) {
 			let res: DataProxy.DataRecord<T[K]>;

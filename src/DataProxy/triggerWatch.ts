@@ -15,7 +15,7 @@ export function triggerWatchByOptions<
 	T extends DataProxy.Type,
 	K extends keyof T = keyof T
 >(
-	proxy: T,
+	proxy: DataProxy<T>,
 	options:
 		| Omit<DataProxy.WatchOptions<T>, 'immediate'>
 		| Omit<DataProxy.WatchOptions<T>, 'key' | 'immediate'>,
@@ -57,7 +57,7 @@ export function triggerWatchByOptions<
  * @param record 原始触发观察的记录，可选
  */
 export function triggerWatch<T extends DataProxy.Type = DataProxy.Type>(
-	proxy: T,
+	proxy: DataProxy<T>,
 	path: string[],
 	record?: DataProxy.DataRecord
 ) {
